@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Earthquake Catalog - Terremotos Recientes</title>
+    <style>
+	body {
+    	   font-family: Didot, sans-serif;
+   	   margin: 0;
+    	   text-align: center;
+    	   background: url("E1.JPG") no-repeat center center fixed;
+   	   background-size: cover;
+	}
+        .contenido {
+            background-color: white; /* Fondo blanco para los datos */
+            margin: 30px auto;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 800px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .quake {
+            border: 1px solid #ccc;
+            margin: 10px auto;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #F7ECDA;
+            max-width: 600px;
+            text-align: left; /* Para que los párrafos no estén centrados */
+        }
+
+        .quake h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .quake p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenido">
+        <h1>🌍 Terremotos Recientes</h1>
+        <hr size="4" color="#A57324">
+        <div id="earthquakeList">Cargando datos de terremotos...</div>
+    </div>
+
+    <script>
+    // URL del API de Earthquake Catalog (USGS) para terremotos recientes de magnitud 4.5+
+    const url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson";
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('earthquakeList');
+            container.innerHTML = ""; // limpiar texto de carga
+            
+            // recorrer terremotos
+            data.features.forEach(eq => {
+                const place = eq.properties.place;
+                const mag = eq.properties.mag;
+                const time = new Date(eq.properties.time).toLocaleString();
+                const url = eq.properties.url;
+
+                // crear bloque de terremoto
+                const quakeDiv = document.createElement('div');
+                quakeDiv.className = 'quake';
+
+                quakeDiv.innerHTML = `
+                    <h3>Magnitud: ${mag}</h3>
+                    <p><b>Ubicación:</b> ${place}</p>
+                    <p><b>Fecha y hora:</b> ${time}</p>
+                    <p><a href="${url}" target="_blank">Más información</a></p>
+                `;
+
+                container.appendChild(quakeDiv);
+            });
+        })
+        .catch(err => {
+            document.getElementById('earthquakeList').innerText = "Error al cargar datos.";
+            console.error(err);
+        });
+    </script>
+
+</body>
+</html>
